@@ -1,4 +1,4 @@
--- CREATE TABLE users(id serial PRIMARY KEY, username text UNIQUE NOT NULL);
+-- CREATE TABLE users(id serial PRIMARY KEY, username text UNIQUE NOT NULL, full_name text, profile_picture text, oauth_token text, insta_id int);
 -- CREATE TABLE hashtags (id serial PRIMARY KEY, tag text UNIQUE NOT NULL);
 -- CREATE TABLE user_hashtags (id serial PRIMARY KEY, user_id int, hashtag_id int);
 -- ALTER TABLE user_hashtags ADD CONSTRAINT foreign_user FOREIGN KEY (user_id) REFERENCES users (id);

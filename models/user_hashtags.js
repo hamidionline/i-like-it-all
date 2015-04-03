@@ -5,17 +5,8 @@ var User = require('./users')
 
 var UserHashtag = function(utag_obj){
 	if(utag_obj){
-		if("id" in utag_obj){
-			this.id = utag_obj.id;
-		} else {
-			this.id = undefined;
-		}
-		if("user_id" in utag_obj && "hashtag_id" in utag_obj){
-			this.user_id = utag_obj.user_id;
-			this.hashtag_id = utag_obj.hashtag_id;
-		} else {
-			this.user_id = undefined;
-			this.hashtag_id = undefined;
+		for(var key in utag_obj){
+			this[key] = utag_obj[key];
 		}
 	}
 }
@@ -23,17 +14,19 @@ var UserHashtag = function(utag_obj){
 UserHashtag.create = function(user, hashtag, callback){
 	pg.connect(conString, function(err, client, done){
 		if(err){
+			done(client);
 			console.error(err);
 			return;
 		}
 		client.query("INSERT INTO user_hashtags(user_id, hashtag_id) VALUES(($1), ($2)) RETURNING id, user_id, hashtag_id", [user.id, hashtag.id], function(err, result){
+			done(client);
 			if(err){
-				console.error(err)
+				callback(err, undefined);
 				return;
 			}
-			done(client);
 			if(callback){
-				callback(new UserHashtag(result.rows[0]));
+				callback(undefined, new UserHashtag(result.rows[0]));
+				return;
 			}
 		});
 	});
@@ -42,22 +35,26 @@ UserHashtag.create = function(user, hashtag, callback){
 UserHashtag.search = function(user, hashtag, callback){
 	pg.connect(conString, function(err, client, done){
 		if(err){
-			console.log(err);
+			done(client);
+			console.error(err);
 			return;
 		}
 		client.query("SELECT * FROM user_hashtags WHERE user_id=($1) AND hashtag_id=($2)", [user.id, hashtag.id], function(err, result){
+			done(client);
 			if(err){
-				console.log(err);
+				callback(err, undefined, undefined);
 				return;
 			}
-			done(client);
-			callback(new UserHashtag(result.rows[0]));
+			if(callback){
+				callback(undefined, hashtag, new UserHashtag(result.rows[0]));
+				return;
+			}
 		});
 	});
 }
 
-// User.get_by_id(1, function(user){
-// 	UserHashtag.search(user, {"id":1}, function(hashtag, utag){
+// User.get_by_id(1, function(err, user){
+// 	UserHashtag.search(user, {"id":1}, function(err, hashtag, utag){
 // 		console.log(hashtag)
 // 	})
 // })
