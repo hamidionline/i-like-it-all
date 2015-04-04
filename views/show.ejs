@@ -1,0 +1,23 @@
+<nav>
+	<%- include('partials/logged_in_header.ejs', {"user": user})%>
+</nav>
+<div class="main">
+	<div class="hashtags"></div>
+</div>
+
+<script id="userHashTagTemplate" type="x-tmpl-mustache">
+{{#hashtags}}
+<form class="hashTagForm" action="{{!.}}{{edit_url}}" method="POST">
+      <div style="display:none;"><input id="csrf_token" name="csrf_token" type="hidden" value="{{form.csrf}}"></div>
+      <input id="hashtag{{!.}}{{id}}" name="tag" type="text" value="{{!.}}{{tag}}">
+      <input type="submit" value="Save">
+</form>
+{{/hashtags}}
+</script>
+<script id="newHashTagTemplate" type="x-tmpl-mustache">
+<form class="hashTagForm" action="{{form.url}}" method="POST">
+      <div style="display:none;"><input id="csrf_token" name="csrf_token" type="hidden" value="{{form.csrf}}"></div>
+      <input id="hashtag" name="tag" type="text">
+      <input type="submit" value="Save">
+</form>
+</script>

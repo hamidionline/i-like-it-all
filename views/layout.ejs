@@ -1,13 +1,8 @@
 <html>
-<head>
-	<link rel='stylesheet', href='/stylesheets/style.css'>
-	<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache.min.js'></script>
-    <script src='/javascripts/main.js'></script>
-    <script id="template" type="x-tmpl-mustache">
-    	"<div class = "login">Please Log In</div>"
-    </script>
-</head>
-<body>
-	
-</body>
+	<head>
+		<%- include partials/scripts.ejs %>
+	</head>
+	<body>
+		<%-body%>
+	</body>
+</html>

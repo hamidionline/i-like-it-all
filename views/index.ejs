@@ -1,2 +1,6 @@
-<% layout('layout') -%>
-Hello
+<nav>
+	<%- include partials/logged_out_header.ejs %>
+</nav>
+<div class "main">
+	<a href="https://api.instagram.com/oauth/authorize/?client_id=<%=client_id%>&redirect_uri=<%=redirect_uri%>&response_type=code">Log In With Instagram</a>
+</div>
