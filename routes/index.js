@@ -40,15 +40,44 @@ router.get('/liking/:username', function(req, res, next) {
 router.get('/userdata/:username/hashtags', function(req, res, next) {
 	User.get_by_username(req.params.username, function(err,user){
 		if(err){
-			res.json(err);
+			console.error(err);
 		}
 		user.get_hashtags(function(err, hashtags){
 			if(err){
 				res.json(err);
 			}
-			res.json({"hashtags": hashtags});
+			res.json({"hashtags": hashtags, "url": req.originalUrl});
 		})
   	})
 });
+
+router.post('/userdata/:username/hashtags', function(req, res, next) {
+	User.get_by_username(req.params.username, function(err,user){
+		if(err){
+			console.error(err);
+		}
+		user.add_hashtag(req.body.tag, function(err, hashtag, usertag){
+			if(err){
+				res.json(err);
+				return;
+			}
+			res.json({"hashtags": hashtag, "url": req.originalUrl})
+		})
+  	})
+});
+
+// switch to put
+router.post('/userdata/:username/hashtags/:uhid', function(req, res, next) {
+	User.get_by_username(req.params.username, function(err,user){
+		if(err){
+			console.error(err);
+		}
+		user.update_hashtag(req.params.uhid, req.body.tag, function(err, hashtag, utag){
+			res.json({"success":true});
+		})
+  	})
+});
+
+// delete route
 
 module.exports = router;
