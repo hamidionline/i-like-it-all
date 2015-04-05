@@ -101,7 +101,7 @@ User.prototype.get_hashtags = function(callback){
 			console.error(err);
 			return;
 		}
-		client.query("SELECT hashtags.id, hashtags.tag FROM hashtags \
+		client.query("SELECT hashtags.id, hashtags.tag, user_hashtags.id AS uhid FROM hashtags \
 						INNER JOIN user_hashtags ON (hashtags.id = user_hashtags.hashtag_id) \
 						INNER JOIN users ON (users.id = user_hashtags.user_id) WHERE users.id = ($1)",
 		[user.id], function(err, result){
@@ -111,8 +111,8 @@ User.prototype.get_hashtags = function(callback){
 				return;
 			}
 			var hashtags = [];
-			for(i in result.rows){
-				hashtags.push(new Hashtag(result.rows[i]))
+			for(var i in result.rows){
+				hashtags.push(new Hashtag(result.rows[i]));
 			}
 			if(callback){
 				callback(undefined, hashtags);
@@ -121,6 +121,12 @@ User.prototype.get_hashtags = function(callback){
 		});
 	});
 }
+
+// User.get_by_id(6, function(err, user){
+// 	user.get_hashtags(function(err, hashtags){
+// 		console.log(hashtags)
+// 	})
+// })
 
 User.prototype.add_hashtag = function(tag, callback){
 	var user = this;
@@ -143,6 +149,26 @@ User.prototype.add_hashtag = function(tag, callback){
 			})
 			}
 		})
+}
+
+// clean this up error checking
+User.prototype.update_hashtag = function(utagId, newTagName, callback){
+	var user = this;
+	UserHashtag.get_by_id(utagId, function(err, utag){
+		Hashtag.get_by_tag(newTagName, function(err, hashtag){
+			if(Object.getOwnPropertyNames(hashtag).length === 0){
+				Hashtag.create(newTagName, function(err, new_tag){
+						utag.hashtag_id = new_tag.id;
+						utag.save();
+						callback(undefined, new_tag, utag);
+				});
+			} else {
+				utag.hashtag_id = hashtag.id;
+				utag.save();
+				callback(undefined, hashtag, utag);
+			}
+		})
+	})
 }
 
 
