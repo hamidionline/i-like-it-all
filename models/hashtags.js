@@ -55,6 +55,27 @@ Hashtag.get_by_tag = function(tagname, callback){
 	});
 }
 
+Hashtag.get_by_id = function(tagid, callback){
+	pg.connect(conString, function(err, client, done){
+		if(err){
+			done(client);
+			console.log(err);
+			return;
+		}
+		client.query("SELECT * FROM hashtags WHERE id=($1)", [tagid], function(err, result){
+			done(client);
+			if(err){
+				callback(err, undefined);
+				return;
+			}
+			if(callback){
+				callback(undefined, new Hashtag(result.rows[0]));
+				return;
+			}
+		});
+	});
+}
+
 // Hashtag.get_by_tag("lol", function(hashtag){
 // 	console.log(hashtag)
 // })
