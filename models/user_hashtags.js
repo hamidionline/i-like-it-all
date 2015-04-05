@@ -32,6 +32,62 @@ UserHashtag.create = function(user, hashtag, callback){
 	});
 }
 
+UserHashtag.prototype.save = function(callback){
+	var utag = this;
+	pg.connect(conString, function(err, client, done){
+		if(err){
+			done(client);
+			console.error(err);
+			return;
+		}
+		if(utag.id){
+			client.query("UPDATE user_hashtags\
+						SET hashtag_id=($1), user_id=($2) WHERE id=($3)", 
+						[utag.hashtag_id, utag.user_id, utag.id], 
+						function(err, result){
+							done(client);
+							if(callback){
+								callback(err, result);
+								return;
+							}
+						});
+		} else {
+			client.query("INSERT INTO users\
+						(hashtag_id, user_id)\
+						VALUES(($1),($2))", 
+						[utag.hashtag_id, utag.user_id], 
+						function(err, result){
+							done(client);
+							if(callback){
+								callback(err, result);
+								return;
+							}
+						});
+		}
+	});
+}
+
+UserHashtag.get_by_id = function(utag_id, callback){
+	pg.connect(conString, function(err, client, done){
+		if(err){
+			done(client);
+			console.log(err);
+			return;
+		}
+		client.query("SELECT * FROM user_hashtags WHERE id=($1)", [utag_id], function(err, result){
+			done(client);
+			if(err){
+				callback(err, undefined);
+				return;
+			}
+			if(callback){
+				callback(undefined, new UserHashtag(result.rows[0]));
+				return;
+			}
+		});
+	});
+}
+
 UserHashtag.search = function(user, hashtag, callback){
 	pg.connect(conString, function(err, client, done){
 		if(err){
@@ -42,11 +98,11 @@ UserHashtag.search = function(user, hashtag, callback){
 		client.query("SELECT * FROM user_hashtags WHERE user_id=($1) AND hashtag_id=($2)", [user.id, hashtag.id], function(err, result){
 			done(client);
 			if(err){
-				callback(err, undefined, undefined);
+				callback(err, undefined);
 				return;
 			}
 			if(callback){
-				callback(undefined, hashtag, new UserHashtag(result.rows[0]));
+				callback(undefined, new UserHashtag(result.rows[0]));
 				return;
 			}
 		});
