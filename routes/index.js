@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/users')
+var UserHashtag = require('../models/user_hashtags')
 var instagram = require('../models/instagram')
 var keys = require('../config/keys')
 
@@ -61,7 +62,7 @@ router.post('/userdata/:username/hashtags', function(req, res, next) {
 				res.json(err);
 				return;
 			}
-			res.json({"hashtags": hashtag, "url": req.originalUrl})
+			res.json({"tag": hashtag.tag, "url": req.originalUrl, "success": "Successfully Added"})
 		})
   	})
 });
@@ -72,9 +73,24 @@ router.post('/userdata/:username/hashtags/:uhid', function(req, res, next) {
 		if(err){
 			console.error(err);
 		}
+		if(req.body.tag.length === 0){
+			UserHashtag.delete(req.params.uhid, function(err, success){
+				if(err){
+					res.json(err)
+					return;
+				}
+				res.json({"tag": "", "success": "Successful Delete"})
+				return;
+			})
+		} else {
 		user.update_hashtag(req.params.uhid, req.body.tag, function(err, hashtag, utag){
-			res.json({"success":true});
+			if(err){
+				res.json(err)
+				return;
+			}
+			res.json({"tag": hashtag.tag, "success": "Succesfully updated"});
 		})
+		}
   	})
 });
 

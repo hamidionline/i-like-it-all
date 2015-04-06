@@ -159,13 +159,20 @@ User.prototype.update_hashtag = function(utagId, newTagName, callback){
 			if(Object.getOwnPropertyNames(hashtag).length === 0){
 				Hashtag.create(newTagName, function(err, new_tag){
 						utag.hashtag_id = new_tag.id;
+						utag.user_id = user.id;
 						utag.save();
 						callback(undefined, new_tag, utag);
 				});
 			} else {
+				UserHashtag.search(user, hashtag, function(err, user_hashtag){
+					if(user_hashtag.id){
+						callback({"error": "User already has this hashtag"}, undefined, undefined);
+						return;
+					}
 				utag.hashtag_id = hashtag.id;
 				utag.save();
 				callback(undefined, hashtag, utag);
+				})
 			}
 		})
 	})

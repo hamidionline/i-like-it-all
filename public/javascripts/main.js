@@ -25,7 +25,9 @@ function postHashtag(){
 			.done(function(data){
 				if(!data.error){
 					getHashtags();
-					renderHashtagForms(data);
+					$(".hashtagsFlash").html(data.success + " " + data.tag);
+				} else {
+					$(".hashtagsFlash").html(data.error);
 				}
 			});
 	})

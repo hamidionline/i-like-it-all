@@ -109,6 +109,27 @@ UserHashtag.search = function(user, hashtag, callback){
 	});
 }
 
+UserHashtag.delete = function(utagId, callback){
+	pg.connect(conString, function(err, client, done){
+		if(err){
+			done(client);
+			console.error(err);
+			return;
+		}
+		client.query("DELETE FROM user_hashtags WHERE id=($1)", [utagId], function(err, result){
+			done(client);
+			if(err){
+				callback(err, undefined);
+				return;
+			}
+			if(callback){
+				callback(undefined, {"success": "delete"});
+				return;
+			}
+		});
+	});
+}
+
 // User.get_by_id(1, function(err, user){
 // 	UserHashtag.search(user, {"id":1}, function(err, hashtag, utag){
 // 		console.log(hashtag)
