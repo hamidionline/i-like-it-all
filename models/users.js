@@ -101,9 +101,9 @@ User.prototype.get_hashtags = function(callback){
 			console.error(err);
 			return;
 		}
-		client.query("SELECT hashtags.id, hashtags.tag, user_hashtags.id AS uhid FROM hashtags \
+		client.query("SELECT hashtags.tag, user_hashtags.id AS uhid, user_hashtags.last_liked, user_hashtags.like_amount FROM hashtags \
 						INNER JOIN user_hashtags ON (hashtags.id = user_hashtags.hashtag_id) \
-						INNER JOIN users ON (users.id = user_hashtags.user_id) WHERE users.id = ($1)",
+						INNER JOIN users ON (users.id = user_hashtags.user_id) WHERE users.id = ($1) ORDER BY hashtags.tag ASC",
 		[user.id], function(err, result){
 			done(client);
 			if(err){
@@ -128,19 +128,19 @@ User.prototype.get_hashtags = function(callback){
 // 	})
 // })
 
-User.prototype.add_hashtag = function(tag, callback){
+User.prototype.add_hashtag = function(tag, amount, callback){
 	var user = this;
 		Hashtag.get_by_tag(tag, function(err, hashtag){
 			if(Object.getOwnPropertyNames(hashtag).length === 0){
 				Hashtag.create(tag, function(err, new_tag){
-					UserHashtag.create(user, new_tag, function(err, new_utag){
+					UserHashtag.create(user, new_tag, amount, function(err, new_utag){
 						callback(undefined, new_tag, new_utag);
 					});
 				})
 			} else {
 				UserHashtag.search(user, hashtag, function(err, utag){
 					if(Object.getOwnPropertyNames(utag).length === 0){
-						UserHashtag.create(user, hashtag, function(err, new_utag){
+						UserHashtag.create(user, hashtag, amount, function(err, new_utag){
 							callback(undefined, hashtag, new_utag);
 						});
 					}else{
@@ -152,7 +152,7 @@ User.prototype.add_hashtag = function(tag, callback){
 }
 
 // clean this up error checking
-User.prototype.update_hashtag = function(utagId, newTagName, callback){
+User.prototype.update_hashtag = function(utagId, newTagName, amount, callback){
 	var user = this;
 	UserHashtag.get_by_id(utagId, function(err, utag){
 		Hashtag.get_by_tag(newTagName, function(err, hashtag){
@@ -160,16 +160,19 @@ User.prototype.update_hashtag = function(utagId, newTagName, callback){
 				Hashtag.create(newTagName, function(err, new_tag){
 						utag.hashtag_id = new_tag.id;
 						utag.user_id = user.id;
+						utag.like_amount = amount;
 						utag.save();
 						callback(undefined, new_tag, utag);
 				});
 			} else {
 				UserHashtag.search(user, hashtag, function(err, user_hashtag){
-					if(user_hashtag.id){
+					if(user_hashtag.id != undefined && user_hashtag.id != utagId){
 						callback({"error": "User already has this hashtag"}, undefined, undefined);
 						return;
 					}
 				utag.hashtag_id = hashtag.id;
+				utag.user_id = user.id;
+				utag.like_amount = amount;
 				utag.save();
 				callback(undefined, hashtag, utag);
 				})

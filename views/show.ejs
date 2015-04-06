@@ -10,6 +10,7 @@
 {{#hashtags}}
 <form class="hashTagForm" action="{{!.}}{{url}}/{{!.}}{{uhid}}" method="PUT">
       <input id="hashtag{{!.}}{{id}}" name="tag" type="text" value="{{!.}}{{tag}}">
+      <input id="likes{{!.}}{{id}}" name="like_amount" value="{{!.}}{{like_amount}}">
       <input type="submit" value="Save">
 </form>
 {{/hashtags}}
@@ -17,6 +18,7 @@
 <script id="newHashTagTemplate" type="x-tmpl-mustache">
 <form class="hashTagForm" action="{{url}}" method="POST">
       <input id="hashtag" name="tag" type="text">
+      <input id="likes" name="like_amount" type="text" value="0">
       <input type="submit" value="Save">
 </form>
 </script>
