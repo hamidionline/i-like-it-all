@@ -11,6 +11,35 @@ var UserHashtag = function(utag_obj){
 	}
 }
 
+UserHashtag.all_query = function(callback){
+	pg.connect(conString, function(err, client, done){
+		if(err){
+			done(client);
+			console.error(err);
+			return;
+		}
+		client.query("SELECT user_hashtags.id AS uhid, user_hashtags.last_liked, user_hashtags.like_amount,\
+			hashtags.tag, users.oauth_token AS token FROM user_hashtags\
+			INNER JOIN users ON (user_hashtags.user_id = users.id)\
+			INNER JOIN hashtags ON (user_hashtags.hashtag_id = hashtags.id)", 
+			function(err, result){
+			done(client);
+			if(err){
+				callback(err, undefined);
+				return;
+			}
+			if(callback){
+				var utag_array = [];
+				for(var i in result.rows){
+					utag_array.push(result.rows[i])
+				}
+				callback(undefined, utag_array);
+				return;
+			}
+		});
+	});
+}
+
 UserHashtag.create = function(user, hashtag, amount, callback){
 	pg.connect(conString, function(err, client, done){
 		if(err){

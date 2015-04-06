@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/users')
-var UserHashtag = require('../models/user_hashtags')
-var instagram = require('../models/instagram')
-var keys = require('../config/keys')
+var User = require('../models/users');
+var UserHashtag = require('../models/user_hashtags');
+var instagram = require('../models/instagram');
+var keys = require('../config/keys');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -57,7 +57,7 @@ router.post('/userdata/:username/hashtags', function(req, res, next) {
 		if(err){
 			console.error(err);
 		}
-		user.add_hashtag(req.body.tag, function(err, hashtag, usertag){
+		user.add_hashtag(req.body.tag, req.body.like_amount, function(err, hashtag, usertag){
 			if(err){
 				res.json(err);
 				return;
@@ -83,7 +83,7 @@ router.post('/userdata/:username/hashtags/:uhid', function(req, res, next) {
 				return;
 			})
 		} else {
-		user.update_hashtag(req.params.uhid, req.body.tag, function(err, hashtag, utag){
+		user.update_hashtag(req.params.uhid, req.body.tag, req.body.like_amount, function(err, hashtag, utag){
 			if(err){
 				res.json(err)
 				return;

@@ -1,5 +1,6 @@
 var request = require('request');
 var keys = require('../config/keys')
+var User = require('./users')
 
 function instagram(){
 	this.something = "something";
@@ -33,6 +34,16 @@ var clean_token = function(token){
 	insta_obj.full_name = token.user.full_name;
 	insta_obj.username = token.user.username;
 	return insta_obj;
+}
+
+instagram.search_hashtag = function(token, tagName, callback){
+	request("https://api.instagram.com/v1/tags/"
+			 + tagName + 
+			 "/media/recent?access_token=" 
+			 + token,
+			function(error, response, body){
+				callback(error, JSON.parse(response.body));
+			})
 }
 
 module.exports = instagram
