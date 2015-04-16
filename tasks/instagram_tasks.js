@@ -8,7 +8,6 @@ var search_task = function(callback){
 		for(var i in query_array){
 			var tag_obj = query_array[i];
 			if(tag_obj.like_amount > 0){
-				console.log(tag_obj.uhid)
 				instagram.search_hashtag(tag_obj.token, tag_obj.tag,
 					function(err, posts){
 						if(err){
@@ -39,8 +38,6 @@ var set_last_liked = function(post, tag_obj){
 var like_post = function(post, tag_obj){
 	request.post({url: "https://api.instagram.com/v1/media/" + post.id + "/likes", form: {"access_token": tag_obj.token}}, 
 		function(err, response, body){
-			console.log("LIKING")
-			console.log(body)
 			set_last_liked(post, tag_obj)
 		})
 }
@@ -56,8 +53,6 @@ search_task(function(err, posts, tag_obj){
 		console.log({"postUrl": post.link, "imageUrl": post.images.standard_resolution.url, "liked":liked})
 	}
 })
-
-
 
 
 // User.get_by_id(6, function(err, user){

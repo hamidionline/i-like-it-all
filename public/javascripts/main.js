@@ -13,6 +13,7 @@ function renderHashtagForms(data){
 function getHashtags(){
 	var username = $('.userinfo').data('username');
 	$.getJSON('/userdata/' + username + '/hashtags', function(data){
+		console.log(data)
 		renderHashtagForms(data);
 	})
 }

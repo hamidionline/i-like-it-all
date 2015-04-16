@@ -17,6 +17,7 @@ router.get('/oauth', function(req, res, next) {
 		User.get_by_username(insta_obj.username, function(err, user){
 			if(err){
 				res.render('error', err);
+				return;
 			}
 			if(!user.id){
 				user = new User(insta_obj);
@@ -33,6 +34,7 @@ router.get('/liking/:username', function(req, res, next) {
   	User.get_by_username(req.params.username, function(err,user){
 		if(err){
 			res.render('error', err);
+			return;
 		}
 		res.render('show', {"user": user});
   	})
@@ -46,6 +48,7 @@ router.get('/userdata/:username/hashtags', function(req, res, next) {
 		user.get_hashtags(function(err, hashtags){
 			if(err){
 				res.json(err);
+				return;
 			}
 			res.json({"hashtags": hashtags, "url": req.originalUrl});
 		})
